@@ -417,22 +417,61 @@ class Momentum:
             self.v[key] = self.momentum * self.v[key] - self.lr * grads[key]
             params[key] += self.v[key]
 
-# ==========================================
-# 5. データ拡張 (アグレッシブ版: 回転±20度採用)
-# ==========================================
+# # ==========================================
+# # 5. データ拡張 (アグレッシブ版: 回転±20度採用)
+# # ==========================================
+# def augment_data_aggressive(x, t):
+#     print("データ拡張(アグレッシブ版)を実行中...")
+#     print("方針: 既存のシフトに加え、±15〜20度の回転を全データに適用します")
+    
+#     N = x.shape[0]
+#     x_img = x.reshape(N, 1, 28, 28) 
+#     x_aug = [x_img] # オリジナル
+#     t_aug = [t]     # オリジナルラベル
+
+#     # --- 1. シフト拡張 ---
+#     shifts = [(-1, 0), (1, 0), (0, -1), (0, 1), (-1, -1), (-1, 1), (1, -1), (1, 1)]
+#     for dy, dx in shifts:
+#         x_shifted = np.roll(x_img, shift=(dy, dx), axis=(2, 3))
+#         if dy > 0: x_shifted[:, :, :dy, :] = 0
+#         elif dy < 0: x_shifted[:, :, dy:, :] = 0
+#         if dx > 0: x_shifted[:, :, :, :dx] = 0
+#         elif dx < 0: x_shifted[:, :, :, dx:] = 0
+#         x_aug.append(x_shifted)
+#         t_aug.append(t)
+
+#     # --- 2. 回転拡張 (OpenCV使用) ---
+#     angles = [-20, -15, 15, 20] 
+
+#     for angle in angles:
+#         x_rotated_list = []
+#         for i in range(N):
+#             img = x_img[i, 0]
+#             M = cv2.getRotationMatrix2D((14, 14), angle, 1.0)
+#             dst = cv2.warpAffine(img, M, (28, 28), flags=cv2.INTER_LINEAR, borderValue=0)
+#             x_rotated_list.append(dst)
+        
+#         x_rotated_np = np.array(x_rotated_list).reshape(N, 1, 28, 28)
+#         x_aug.append(x_rotated_np)
+#         t_aug.append(t)
+
+#     return np.concatenate(x_aug), np.concatenate(t_aug)
+
 def augment_data_aggressive(x, t):
-    print("データ拡張(アグレッシブ版)を実行中...")
-    print("方針: 既存のシフトに加え、±15〜20度の回転を全データに適用します")
+    print("データ拡張(アグレッシブ版・改)を実行中...")
+    print("方針: 既存のシフト(8方向)に加え、回転時にランダムZoomと微細シフトをMIXします")
     
     N = x.shape[0]
     x_img = x.reshape(N, 1, 28, 28) 
     x_aug = [x_img] # オリジナル
     t_aug = [t]     # オリジナルラベル
 
-    # --- 1. シフト拡張 ---
+    # --- 1. 固定シフト拡張 (ここは98.4%の実績があるのでそのまま維持) ---
+    # np.rollは「画素単位」のズレを作ります（整数のズレに強い）
     shifts = [(-1, 0), (1, 0), (0, -1), (0, 1), (-1, -1), (-1, 1), (1, -1), (1, 1)]
     for dy, dx in shifts:
         x_shifted = np.roll(x_img, shift=(dy, dx), axis=(2, 3))
+        # はみ出した部分を黒埋め処理
         if dy > 0: x_shifted[:, :, :dy, :] = 0
         elif dy < 0: x_shifted[:, :, dy:, :] = 0
         if dx > 0: x_shifted[:, :, :, :dx] = 0
@@ -440,14 +479,34 @@ def augment_data_aggressive(x, t):
         x_aug.append(x_shifted)
         t_aug.append(t)
 
-    # --- 2. 回転拡張 (OpenCV使用) ---
+    # --- 2. 回転 + Zoom + 微細Shift (OpenCV使用) ---
+    # 回転角度リスト (維持)
     angles = [-20, -15, 15, 20] 
 
     for angle in angles:
         x_rotated_list = []
         for i in range(N):
             img = x_img[i, 0]
-            M = cv2.getRotationMatrix2D((14, 14), angle, 1.0)
+            
+            # ★改造ポイント: ここでZoomとShiftをランダムに混ぜる
+            
+            # Zoom (拡大縮小): 0.9倍(引き) 〜 1.1倍(寄り)
+            # 回転させるついでに、少しサイズを変えることで「筆跡の太さ・大きさ」に対応
+            scale = np.random.uniform(0.9, 1.1)
+            
+            # 微細Shift (位置ずらし): -2px 〜 +2px
+            # 固定シフト(np.roll)ではカバーできない「1.5px」のような滑らかなズレを作る
+            tx = np.random.randint(-2, 3)
+            ty = np.random.randint(-2, 3)
+
+            # 回転行列の作成 (中心, 角度, ★倍率)
+            M = cv2.getRotationMatrix2D((14, 14), angle, scale)
+            
+            # ★行列の平行移動成分にShiftを加算
+            M[0, 2] += tx
+            M[1, 2] += ty
+
+            # アフィン変換実行
             dst = cv2.warpAffine(img, M, (28, 28), flags=cv2.INTER_LINEAR, borderValue=0)
             x_rotated_list.append(dst)
         
@@ -466,7 +525,7 @@ PICKLE_END_NAME = r".\pickle\katakana_model_end.pickle"
 # ハイパーパラメータ (時間がない場合は Iters=15000, batch_size=100 に戻してください)
 #iters_num = 50000
 #iters_num = 10000
-ITERS_NUM = 5000
+ITERS_NUM = 8000
 #batch_size = 32
 BATCH_SIZE = 100
 LEARNING_RATE = 0.01
@@ -503,7 +562,7 @@ x_train_aug, t_train_aug = augment_data_aggressive(x_train_split, t_train_split)
 print(f"学習データ数: {x_train_split.shape[0]} -> {x_train_aug.shape[0]}")
 
 # モデルを Three_ConvNet に変更
-network = Three_ConvNet(input_dim=(1,28,28), hidden_size=100, output_size=15, dropout_ratio=0.7)
+network = Three_ConvNet(input_dim=(1,28,28), hidden_size=100, output_size=15)
 optimizer = Momentum(lr=LEARNING_RATE)
 
 print(f"\n--- Three_ConvNet + BatchNorm 学習開始 (Iters={ITERS_NUM}, Batch={BATCH_SIZE}) ---")
