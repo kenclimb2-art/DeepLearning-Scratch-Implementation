@@ -466,7 +466,7 @@ PICKLE_END_NAME = r".\pickle\katakana_model_end.pickle"
 # ハイパーパラメータ (時間がない場合は Iters=15000, batch_size=100 に戻してください)
 #iters_num = 50000
 #iters_num = 10000
-ITERS_NUM = 5000
+ITERS_NUM = 10000
 #batch_size = 32
 BATCH_SIZE = 100
 LEARNING_RATE = 0.01
@@ -503,7 +503,7 @@ x_train_aug, t_train_aug = augment_data_aggressive(x_train_split, t_train_split)
 print(f"学習データ数: {x_train_split.shape[0]} -> {x_train_aug.shape[0]}")
 
 # モデルを Three_ConvNet に変更
-network = Three_ConvNet(input_dim=(1,28,28), hidden_size=100, output_size=15, dropout_ratio=0.7)
+network = Three_ConvNet(input_dim=(1,28,28), hidden_size=100, output_size=15)
 optimizer = Momentum(lr=LEARNING_RATE)
 
 print(f"\n--- Three_ConvNet + BatchNorm 学習開始 (Iters={ITERS_NUM}, Batch={BATCH_SIZE}) ---")
