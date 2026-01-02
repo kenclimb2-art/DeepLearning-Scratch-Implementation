@@ -73,7 +73,10 @@ python pickle_light.py
 本コードはE資格課題の要件に基づき作成されました。
 学習済みモデルは pickle 形式で保存されます。
 
-7. その後
-・2025.12.31
-    train_katakana_dropout.py で98.4%達成
-    train_katakana_dropout_2.py で98.5%達成
+7. その後<br>
+・2025.12.31<br>
+    train_katakana_dropout.py で98.4%達成<br>
+    train_katakana_dropout_2.py で98.5%達成<br>
+ ・2026.1.1<br>
+    train_katakana_dropout_3.py で98.57%達成<br>
+ 
