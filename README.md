@@ -34,7 +34,7 @@ B. モデル構造の最適化 (Resolution Preservation)
     「どの文字を間違えたか」をランキング形式で出力し、弱点を分析します。
 ・pickle_light.py: モデル軽量化スクリプト。
    推論に不要な中間データ（勾配情報やバッファ）を削除し、ファイルサイズを圧縮します。
-   util.pyデータ読み込みや精度計算のためのユーティリティ関数群。
+・putil.py: データ読み込みや精度計算のためのユーティリティ関数群。
 ・requirements.txt: 必要なライブラリ一覧
 
 5. 実行手順 (Usage)
@@ -77,6 +77,6 @@ python pickle_light.py
 ・2025.12.31<br>
     train_katakana_dropout.py で98.4%達成<br>
     train_katakana_dropout_2.py で98.5%達成<br>
- ・2026.1.1<br>
+・2026.1.1<br>
     train_katakana_dropout_3.py で98.57%達成<br>
  
