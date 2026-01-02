@@ -26,22 +26,22 @@ B. モデル構造の最適化 (Resolution Preservation)
 ・Before: 3x3 map -> 「カ」と「ク」の区別がつかない
 ・After: 7x7 map -> 微細な形状を維持し、誤認率をほぼゼロ化
 
-4. ファイル構成
-・train_katakana.py: 学習用メインスクリプト
-    CNNクラス定義(Three_ConvNet)、データ拡張、学習ループ、モデル保存までを一括で行います。
-・analyze_models.py: 検証・分析スクリプト。
-    学習済みモデルを読み込み、混同行列（Confusion Matrix）を作成。
-    「どの文字を間違えたか」をランキング形式で出力し、弱点を分析します。
-・pickle_light.py: モデル軽量化スクリプト。
-   推論に不要な中間データ（勾配情報やバッファ）を削除し、ファイルサイズを圧縮します。
-・putil.py: データ読み込みや精度計算のためのユーティリティ関数群。
-・requirements.txt: 必要なライブラリ一覧
+4. ファイル構成<br>
+・train_katakana.py: 学習用メインスクリプト<br>
+    CNNクラス定義(Three_ConvNet)、データ拡張、学習ループ、モデル保存までを一括で行います。<br>
+・analyze_models.py: 検証・分析スクリプト。<br>
+    学習済みモデルを読み込み、混同行列（Confusion Matrix）を作成。<br>
+    「どの文字を間違えたか」をランキング形式で出力し、弱点を分析します。<br>
+・pickle_light.py: モデル軽量化スクリプト。<br>
+   推論に不要な中間データ（勾配情報やバッファ）を削除し、ファイルサイズを圧縮します。<br>
+・putil.py: データ読み込みや精度計算のためのユーティリティ関数群。<br>
+・requirements.txt: 必要なライブラリ一覧<br>
 
-5. 実行手順 (Usage)
-前提条件 (Requirements)
-・Python 3.x
-・NumPy
-・OpenCV (opencv-python)
+5. 実行手順 (Usage)<br>
+前提条件 (Requirements)<br>
+・Python 3.x<br>
+・NumPy<br>
+・OpenCV (opencv-python)<br>
 
 インストール:
 Bash
