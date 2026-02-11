@@ -1,5 +1,5 @@
 ```markdown
-# カタカナ画像識別プロジェクト - E資格認定課題
+# カタカナ画像識別プロジェクト
 
 ![Python](https://img.shields.io/badge/Python-3.x-blue?style=flat-square&logo=python)
 ![NumPy](https://img.shields.io/badge/Library-NumPy_Only-orange?style=flat-square)
@@ -8,7 +8,7 @@
 ## 1. 概要 (Overview)
 本プロジェクトは、手書きカタカナ15文字（アイウエオカキクケコサシスセソ）の画像データを識別するDeep Learningモデルの実装です。
 **フレームワーク（PyTorch/TensorFlow等）を一切使用せず、NumPyのみでCNN（畳み込みニューラルネットワーク）をスクラッチ実装**し、高精度な識別を実現しました。
-
+Javaエンジニアとして、ブラックボックスになりがちな数式をクラス構造に落とし込みました
 ---
 
 ## 2. 成果 (Results)
